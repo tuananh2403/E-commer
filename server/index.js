@@ -1,10 +1,11 @@
 const express = require("express");
 
-const app = express();
-const port = process.env.PORT || 3000;
 const initRoutes = require("./routes");
-
+const cookieParser = require("cookie-parser");
 const dbConnect = require("./config/dbconnect");
+const app = express();
+app.use(cookieParser());
+const port = 8888;
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
