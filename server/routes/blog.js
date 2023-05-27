@@ -4,8 +4,10 @@ const ctrls = require("../controllers/blog");
 
 router.get("/", ctrls.getBlogs);
 router.post("/", [verifyAccessToken, isAdmin], ctrls.createNewBlog);
-router.put("/like", verifyAccessToken, ctrls.likeBlog);
-router.put("/dislike", verifyAccessToken, ctrls.disLikeBlog);
+router.get("/one/:bid", verifyAccessToken, ctrls.getBlog);
+router.put("/like/:bid", verifyAccessToken, ctrls.likeBlog);
+router.put("/dislike/:bid", verifyAccessToken, ctrls.disLikeBlog);
 
 router.put("/:bid", [verifyAccessToken, isAdmin], ctrls.updateBlog);
+router.delete("/:bid", [verifyAccessToken, isAdmin], ctrls.deleteBlog);
 module.exports = router;

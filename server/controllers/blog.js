@@ -28,7 +28,7 @@ const getBlogs = asyncHandler(async (req, res) => {
 });
 const likeBlog = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { bid } = req.body;
+  const { bid } = req.params;
   //   console.log(bid);
   if (!bid) throw new Error("missing input");
   const blog = await Blog.findById(bid);
@@ -70,7 +70,7 @@ const likeBlog = asyncHandler(async (req, res) => {
 });
 const disLikeBlog = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { bid } = req.body;
+  const { bid } = req.params;
   //   console.log(bid);
   if (!bid) throw new Error("missing input");
   const blog = await Blog.findById(bid);
@@ -106,10 +106,36 @@ const disLikeBlog = asyncHandler(async (req, res) => {
     });
   }
 });
+
+const getBlog = asyncHandler(async (req, res) => {
+  const { bid } = req.params;
+  const response = await Blog.findByIdAndUpdate(
+    bid,
+    { $inc: { numberViews: 1 } },
+    { new: true }
+  )
+    .populate("likes", "firstname lastname")
+    .populate("disLikes", "firstname lastname");
+  return res.status(200).json({
+    success: response ? true : false,
+    rs: response,
+  });
+});
+const deleteBlog = asyncHandler(async (req, res) => {
+  const { bid } = req.params;
+  const response = await Blog.findByIdAndDelete(bid);
+
+  return res.status(200).json({
+    success: response ? true : false,
+    deleted: response || "something went wrong",
+  });
+});
 module.exports = {
   createNewBlog,
   updateBlog,
   getBlogs,
   likeBlog,
   disLikeBlog,
+  getBlog,
+  deleteBlog,
 };
