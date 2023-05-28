@@ -14,7 +14,7 @@ const getCategories = asyncHandler(async (req, res) => {
   const responsive = await BlogCategory.find().select("title");
   return res.status(200).json({
     success: responsive ? true : false,
-    BlogCategories: responsive ? responsive : "cannot create new Blog category",
+    BlogCategories: responsive ? responsive : "cannot get  Blog category",
   });
 });
 const updateCategory = asyncHandler(async (req, res) => {
