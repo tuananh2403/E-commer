@@ -3,7 +3,15 @@ const express = require("express");
 const initRoutes = require("./routes");
 const cookieParser = require("cookie-parser");
 const dbConnect = require("./config/dbconnect");
+const cors = require("cors");
 const app = express();
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: ["POST", "PUT", "GET", "DELETE"],
+  })
+);
 app.use(cookieParser());
 const port = 8888;
 app.use(express.json());

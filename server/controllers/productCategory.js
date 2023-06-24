@@ -11,7 +11,7 @@ const createCategory = asyncHandler(async (req, res) => {
   });
 });
 const getCategories = asyncHandler(async (req, res) => {
-  const responsive = await ProductCategory.find().select("title");
+  const responsive = await ProductCategory.find();
   return res.status(200).json({
     success: responsive ? true : false,
     productCategories: responsive

@@ -27,7 +27,7 @@ const getProducts = asyncHandler(async (req, res) => {
   excludeFields.forEach((el) => delete queries[el]);
   let queryString = JSON.stringify(queries);
   queryString = queryString.replace(
-    /\b(gte|gt|lt|lte)\b/g,
+    /\b(gte|gt|lt|lte|eq)\b/g,
     (macthedEl) => `$${macthedEl}`
   );
   const formatedQueries = JSON.parse(queryString);
@@ -49,7 +49,7 @@ const getProducts = asyncHandler(async (req, res) => {
   }
   //pagination
   const page = +req.query.page || 1;
-  const limit = +req.query.limit || 2;
+  const limit = +req.query.limit || 12;
   const skip = (page - 1) * limit;
   queryCommand.skip(skip).limit(limit);
   queryCommand.exec(async (err, response) => {
@@ -130,7 +130,7 @@ const ratings = asyncHandler(async (req, res) => {
 });
 const uploadImagesProduct = asyncHandler(async (req, res) => {
   const { pid } = req.params;
-  console.log(req.files);
+
   if (!req.files) throw new Error("Missing input");
   const response = await Product.findByIdAndUpdate(
     pid,

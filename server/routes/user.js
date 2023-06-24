@@ -6,12 +6,15 @@ router.post("/login", ctrls.login);
 router.get("/current", verifyAccessToken, ctrls.getCurrent);
 router.post("/refreshtoken", ctrls.refreshAccessToken);
 router.get("/logout", ctrls.logout);
-router.get("/forgotpassword", ctrls.forgotPassword);
+router.post("/forgotpassword", ctrls.forgotPassword);
 router.put("/resetpassword", ctrls.resetPassword);
 
 router.get("/", [verifyAccessToken, isAdmin], ctrls.getUsers);
+router.get("/cart", [verifyAccessToken], ctrls.getCart);
 router.delete("/", [verifyAccessToken, isAdmin], ctrls.deleteUser);
 router.put("/current", [verifyAccessToken], ctrls.updateUser);
+router.put("/address", [verifyAccessToken, isAdmin], ctrls.updateUserAddress);
+router.put("/cart", [verifyAccessToken], ctrls.updateCart);
 router.put("/:uid", [verifyAccessToken, isAdmin], ctrls.updateUserByAdmin);
 
 module.exports = router;

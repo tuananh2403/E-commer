@@ -17,7 +17,10 @@ const register = asyncHandler(async (req, res) => {
   }
   const user = await User.findOne({ email: email });
   if (user) {
-    throw new Error(`User has existed!`);
+    return res.status(200).json({
+      success: false,
+      mes: "Email đã tồn tại xin mời chọn email khác",
+    });
   } else {
     const newUser = await User.create(req.body);
     return res.status(200).json({
@@ -61,7 +64,7 @@ const login = asyncHandler(async (req, res) => {
 });
 const getCurrent = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const user = await User.findById(_id).select("-refreshToken -password -role");
+  const user = await User.findById(_id).select("-refreshToken -password ");
   return res.status(200).json({
     success: user ? true : false,
     rs: user ? user : "User not found",
@@ -102,14 +105,18 @@ const logout = asyncHandler(async (req, res) => {
   });
 });
 const forgotPassword = asyncHandler(async (req, res) => {
-  const { email } = req.query;
+  const { email } = req.body;
   if (!email) throw new Error("missing email");
   const user = await User.findOne({ email });
-  if (!user) throw new Error("user not found");
+  if (!user) {
+    return res.status(200).json({
+      success: false,
+    });
+  }
   const resetToken = user.createPasswordChangedToken();
   await user.save();
 
-  const html = `Xin vui long click de thay doi mat khau cua ban<a href="${`http://localhost:8888/api/user/reset-password/${resetToken}`}">click here</a>`;
+  const html = `Xin vui long click de thay doi mat khau cua ban<a href="${`http://localhost:3000/reset-password/${resetToken}`}">click here</a>`;
 
   const data = {
     email,
@@ -185,6 +192,60 @@ const updateUserByAdmin = asyncHandler(async (req, res) => {
     UpdatedUser: response ? response : "some thing went wrong",
   });
 });
+const updateUserAddress = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  if (!req.body.address) throw new Error("Missing inputs");
+  const response = await User.findByIdAndUpdate(
+    _id,
+    { $push: { address: req.body.address } },
+    {
+      new: true,
+    }
+  ).select(" -password -role");
+  return res.status(200).json({
+    success: response ? true : false,
+    UpdatedUser: response ? response : "some thing went wrong",
+  });
+});
+const updateCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { pid, quantity } = req.body;
+  if (!pid || !quantity) throw new Error("Missing inputs");
+  const user = await User.findById(_id).select("cart");
+
+  const alreadyProduct = user?.cart?.find(
+    (el) => el.product.toString() === pid
+  );
+  if (alreadyProduct) {
+    const response = await User.updateOne(
+      { cart: { $elemMatch: alreadyProduct } },
+      { $set: { "cart.$.quantity": quantity } },
+      { new: true }
+    );
+    return res.status(200).json({
+      success: response ? true : false,
+      updateUser: response ? response : "some thing went wrong",
+    });
+  } else {
+    const response = await User.findByIdAndUpdate(
+      _id,
+      { $push: { cart: { product: pid, quantity } } },
+      { new: true }
+    ).populate("product", "title");
+    return res.status(200).json({
+      success: response ? true : false,
+      updateUser: response ? response : "some thing went wrong",
+    });
+  }
+});
+const getCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const response = await User.findById(_id).select("cart");
+  return res.status(200).json({
+    success: response ? true : false,
+    users: response,
+  });
+});
 module.exports = {
   register,
   login,
@@ -197,4 +258,7 @@ module.exports = {
   deleteUser,
   updateUser,
   updateUserByAdmin,
+  updateUserAddress,
+  updateCart,
+  getCart,
 };
