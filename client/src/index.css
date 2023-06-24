@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+button.slick-next::before{
+    content: '\276D';
+    font-size: 50px;
+}
+button.slick-next{
+    top: 50%;
+    right: 0;
+   
+}
+button.slick-prev::before{
+    content: '\276C';
+    font-size: 50px;
+   
+}
+button.slick-prev{
+    
+    top: 50%;
+    left: 0;
+   z-index: 100;
+}
+ul.slick-dots{
+   
+   
+    bottom: 2rem;
+}
